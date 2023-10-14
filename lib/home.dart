@@ -7,9 +7,21 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   bool isLike = false;
-  Color iconColor = Colors.white;
+  late Animation animation;
+  late AnimationController animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 2));
+    animation = ColorTween(begin: Colors.grey[400], end: Colors.red)
+        .animate(animationController);
+
+    animationController.addListener(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +34,7 @@ class _HomeState extends State<Home> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "Mahankeswar Mandir",
                   style: TextStyle(
                       color: Colors.black,
@@ -31,17 +43,22 @@ class _HomeState extends State<Home> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 30, right: 12),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.thumb_up,
-                      size: 30,
-                      color: iconColor,
+                  child: AnimatedBuilder(
+                    animation: animationController,
+                    builder: (BuildContext context, Widget? child) =>
+                        IconButton(
+                      icon: Icon(
+                        Icons.thumb_up,
+                        size: 30,
+                        color: animation.value,
+                      ),
+                      onPressed: () {
+                        isLike
+                            ? animationController.reverse()
+                            : animationController.forward();
+                        isLike = !isLike;
+                      },
                     ),
-                    onPressed: () {
-                      iconColor = isLike ? Colors.grey : Colors.red;
-                      isLike = !isLike;
-                      setState(() {});
-                    },
                   ),
                 )
               ],
